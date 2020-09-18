@@ -11,6 +11,7 @@ import time
 from mailjet_rest import Client
 import os
 import json
+import datetime
 
 load_dotenv(find_dotenv())
 
@@ -45,7 +46,7 @@ newoffers = {
 
 def findnumber(string):
     try:
-        return int(re.search('\s\d\s+', string).group())
+        return int(re.search('\s\d+\s', string).group())
     except:
         return 0
 
@@ -99,8 +100,7 @@ def checkchange(old, fetched):
                 print("Company " + str(i) + " added " + str(int(l)-int(j)) + " position(s)")
                 tempBool = True
             if(i == k and j > l):
-                tempString += ("Company " + str(i) + " removed " + str(int(j)-int(l)) + " position(s)\n")
-                print("Company " + str(i) + " added " + str(int(l)-int(j)) + " position(s)")
+                print("Company " + str(i) + " removed " + str(int(j)-int(l)) + " position(s)")
     
     diff = list(set(fetched.keys()) - set(old.keys()))
     if(diff):
@@ -180,9 +180,13 @@ while(True):
         sendEmail("New Interview Found")
         updatejson = True
 
-    driver.close()
+    #driver.close()
 
     if(updatejson):
+        if("time" in jsonfile):
+            print("Last Time JSON file was updated: " + str(jsonfile['time']))
+        print("Updating JSON File")
+        jsonfile['time'] = str(datetime.datetime.now())
         print("Updating JSON File")
         jsonfile['offers'] = newoffers
         jsonfile['previousjob'] = newjob
